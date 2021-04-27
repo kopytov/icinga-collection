@@ -170,7 +170,7 @@ sub sys_stats {
         $mem_total  = $memory[7];
         $mem_used   = $DONT_INCLUDE_BUFFERS ? $memory[8] : $mem_total - $memory[12];
         $swap_total = $memory[14];
-        $swap_used  = $memory[16];
+        $swap_used  = $memory[15];
     }
     elsif ( @memory == 25 ) {
         $mem_total  = $memory[7];
