@@ -9,6 +9,9 @@
 # Copyright Notice: GPL
 #
 # History:
+# v1.9 Dmitry Kopytov - kopytov@kopytov.ru
+# + adapted for updated free output
+#
 # v1.8 Rouven Homann - rouven.homann@cimt.de
 # + added findbin patch from Duane Toler
 # + added backward compatibility patch from Timour Ezeev
@@ -57,7 +60,7 @@ use Getopt::Long;
 use vars qw($opt_V $opt_h $verbose $opt_w $opt_c);
 
 $PROGNAME = "check_mem";
-$PROGVER = "1.8";
+$PROGVER = "1.9";
 
 # add a directive to exclude buffers:
 my $DONT_INCLUDE_BUFFERS = 0;
@@ -161,20 +164,26 @@ if ($mem_percent>$mem_critical || $swap_percent>$swap_critical) {
 }
 
 sub sys_stats {
-    my @memory = split(" ", `free -mt`);
-    my $mem_total = $memory[7];
-    my $mem_used;
-    if ( $DONT_INCLUDE_BUFFERS) { $mem_used = $memory[15]; }
-    else { $mem_used = $memory[8];}
-    my $swap_total = $memory[18];
-    my $swap_used = $memory[19];
-    my $mem_percent = ($mem_used / $mem_total) * 100;
-    my $swap_percent;
-    if ($swap_total == 0) {
-  $swap_percent = 0;
-    } else {
-  $swap_percent = ($swap_used / $swap_total) * 100;
+    my @memory  = split(" ", `free -mt`);
+    my ( $mem_total, $mem_used, $swap_total, $swap_used );
+    if ( @memory == 21 ) {
+        $mem_total  = $memory[7];
+        $mem_used   = $DONT_INCLUDE_BUFFERS ? $memory[8] : $mem_total - $memory[12];
+        $swap_total = $memory[14];
+        $swap_used  = $memory[16];
     }
+    elsif ( @memory == 25 ) {
+        $mem_total  = $memory[7];
+        $mem_used   = $DONT_INCLUDE_BUFFERS ? $memory[8] : $memory[15];
+        $swap_total = $memory[18];
+        $swap_used  = $memory[19];
+    }
+    else {
+        print "Unknown `free -mt` output\n";
+        exit $ERRORS{'UNKNOWN'};
+    }
+    my $mem_percent  = ($mem_used / $mem_total) * 100;
+    my $swap_percent = $swap_total == 0 ? 0 : ($swap_used / $swap_total) * 100;
     return (sprintf("%.0f",$mem_percent),$mem_total,$mem_used, sprintf("%.0f",$swap_percent),$swap_total,$swap_used);
 }
 
