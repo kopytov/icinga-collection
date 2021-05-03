@@ -87,6 +87,8 @@ use vars qw(
   $plugin
   $hddtemp_bin
   $sensors_bin
+  $use_sudo
+  $sudo_prefix
   $drives
   $help
   $list
@@ -112,19 +114,20 @@ use vars qw(
 );
 
 # initialization
-$criticals = q{};
-$desc      = q{};
-$drives    = 1;
-$help      = q{};
-$prog_name = 'LM_SENSORS';
-$plugin    = $plugin_module->new( shortname => $prog_name );
-$sensors   = 1;
-$space     = q{};
-$status    = q{};
-$unknowns  = q{};
-$verbosity = 0;
-$warnings  = q{};
-
+$criticals   = q{};
+$desc        = q{};
+$drives      = 1;
+$help        = q{};
+$prog_name   = 'LM_SENSORS';
+$plugin      = $plugin_module->new( shortname => $prog_name );
+$sensors     = 1;
+$space       = q{};
+$status      = q{};
+$unknowns    = q{};
+$verbosity   = 0;
+$warnings    = q{};
+$use_sudo    = 0;
+$sudo_prefix = q{};
 ##############################################################################
 # subroutines
 
@@ -225,6 +228,8 @@ Options:
   --hddtemp_bin   manually specifies the location of the hddtemp binary
 
   --sensors_bin   manually specified the location of the sensors binary
+
+  --use_sudo      prepend sudo command before hddtemp
 
   -v, --verbose   verbose output
 
@@ -332,7 +337,7 @@ sub parse_drives {
 
             verbose "  checking disk /dev/$name\n", 1;
 
-            my $command = "$hddtemp_bin -n /dev/$name";
+            my $command = "$sudo_prefix$hddtemp_bin -n /dev/$name";
 
             my $output;
 
@@ -482,6 +487,7 @@ $result = GetOptions(
     'check|c=s'     => \%checks,
     'drives!'       => \$drives,
     'hddtemp_bin=s' => \$hddtemp_bin,
+    'use_sudo'      => \$use_sudo,
     'help|?'        => sub { usage() },
     'high|h=s'      => \%highs,
     'list'          => \$list,
@@ -498,6 +504,8 @@ $result = GetOptions(
 if ( !$result ) {
     usage();
 }
+
+$sudo_prefix = get_path('sudo') . q{ } if $use_sudo;
 
 if (   !( defined $list )
     && !(%checks)
