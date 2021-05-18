@@ -1,0 +1,28 @@
+module icinga-collection 1.0;
+
+require {
+    type devlog_t;
+    type icinga2_t;
+    type nagios_mail_plugin_t;
+    type postfix_master_exec_t;
+    type rpm_exec_t;
+    type rpm_var_cache_t;
+    type rpm_var_lib_t;
+    type sudo_exec_t;
+    type user_tmp_t;
+    class dir { getattr ioctl open read search };
+    class file { execute execute_no_trans getattr ioctl lock open read };
+    class sock_file { getattr };
+}
+
+### check_mailq
+allow nagios_mail_plugin_t postfix_master_exec_t:file { getattr execute };
+allow nagios_mail_plugin_t sudo_exec_t:file { getattr execute };
+
+### check_yum.py
+allow icinga2_t devlog_t:sock_file { getattr };
+allow icinga2_t rpm_exec_t:file { execute execute_no_trans getattr ioctl open read };
+allow icinga2_t rpm_var_lib_t:file { getattr lock open read };
+allow icinga2_t rpm_var_lib_t:dir { getattr open read search };
+allow icinga2_t rpm_var_cache_t:dir { getattr open read search };
+allow icinga2_t user_tmp_t:dir { getattr open read search };
