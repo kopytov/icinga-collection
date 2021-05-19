@@ -5485,10 +5485,10 @@ if (defined $opt{perfdata} && !$opt{debug} && @perfdata) {
     }
     else {
 	if ($opt{perfdata} eq 'minimal') {
-	    print join $lb, map { "$_->{type}$_->{id}=$_->{value}$_->{unit};$_->{warn};$_->{crit}" } sort perfsort @perfdata;
+	    print join $lb, map { "$_->{type}$_->{id}=$_->{value};$_->{warn};$_->{crit}" } sort perfsort @perfdata;
 	}
 	else {
-	    print join $lb, map { "$_->{type}$_->{id}_$_->{label}=$_->{value}$_->{unit};$_->{warn};$_->{crit}" } sort perfsort @perfdata;
+	    print join $lb, map { "$_->{type}$_->{id}_$_->{label}=$_->{value};$_->{warn};$_->{crit}" } sort perfsort @perfdata;
 	}
     }
 }
