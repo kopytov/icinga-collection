@@ -3,16 +3,27 @@ module icinga-collection 1.0;
 require {
     type devlog_t;
     type icinga2_t;
+    type krb5_conf_t;
+    type nagios_checkdisk_plugin_t;
     type nagios_mail_plugin_t;
+    type nagios_unconfined_plugin_t;
     type postfix_master_exec_t;
+    type proc_net_t;
     type rpm_exec_t;
     type rpm_var_cache_t;
     type rpm_var_lib_t;
+    type samba_etc_t;
+    type smbd_port_t;
     type sudo_exec_t;
     type user_tmp_t;
     class dir { getattr ioctl open read search };
     class file { execute execute_no_trans getattr ioctl lock open read };
+    class key { read write };
+    class netlink_route_socket { bind create getattr nlmsg_read read write };
     class sock_file { getattr };
+    class tcp_socket { connect create getattr getopt name_connect read setopt write };
+    class udp_socket { create ioctl };
+    class unix_dgram_socket { create ioctl };
 }
 
 ### check_mailq
@@ -26,3 +37,15 @@ allow icinga2_t rpm_var_lib_t:file { getattr lock open read };
 allow icinga2_t rpm_var_lib_t:dir { getattr open read search };
 allow icinga2_t rpm_var_cache_t:dir { getattr open read search };
 allow icinga2_t user_tmp_t:dir { getattr open read search };
+
+### check_disk_smb
+allow nagios_checkdisk_plugin_t krb5_conf_t:file { getattr open read };
+allow nagios_checkdisk_plugin_t nagios_unconfined_plugin_t:key { read };
+allow nagios_checkdisk_plugin_t proc_net_t:file { read };
+allow nagios_checkdisk_plugin_t samba_etc_t:file { getattr open read };
+allow nagios_checkdisk_plugin_t self:key { read write };
+allow nagios_checkdisk_plugin_t self:netlink_route_socket { bind create getattr nlmsg_read read write };
+allow nagios_checkdisk_plugin_t self:tcp_socket { connect create getattr getopt read setopt write };
+allow nagios_checkdisk_plugin_t self:udp_socket { create ioctl };
+allow nagios_checkdisk_plugin_t self:unix_dgram_socket { create ioctl };
+allow nagios_checkdisk_plugin_t smbd_port_t:tcp_socket { name_connect };
