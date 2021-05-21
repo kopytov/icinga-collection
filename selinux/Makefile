@@ -5,5 +5,5 @@ icinga-collection.pp: icinga-collection.te
 	semodule_package -o icinga-collection.pp -m icinga-collection.mod
 
 install:
-	semodule -r icinga-collection
+	semodule -r icinga-collection || echo "OK - semodule not installed"
 	semodule -i icinga-collection.pp
