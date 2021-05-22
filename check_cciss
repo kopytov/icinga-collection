@@ -185,7 +185,7 @@ COMPAQPROC="/proc/driver/cpqarray/ida"
 hpacucli="/usr/sbin/hpacucli"
 hpssacli="/usr/sbin/hpssacli"
 
-. $PROGPATH/utils.sh
+. /usr/lib64/nagios/plugins/utils.sh
 
 print_usage() {
         echo ""
