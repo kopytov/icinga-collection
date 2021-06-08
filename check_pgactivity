@@ -2852,14 +2852,14 @@ sub check_bgwriter {
     $delta_backend_fsync     = ($rs[7] - $bgw{'backend_fsync'})    / $delta_ts;
 
     push @perfdata, (
-        [ 'buffers_backend', $delta_buff_backend, 'Bps' ],
-        [ 'checkpoint_timed', $delta_checkpoint_timed, 'Nps' ],
-        [ 'checkpoint_req', $delta_checkpoint_req, 'Nps' ],
-        [ 'buffers_checkpoint', $delta_buff_checkpointer, 'Bps' ],
-        [ 'buffers_clean', $delta_buff_bgwriter, 'Bps' ],
-        [ 'maxwritten_clean', $delta_maxwritten_clean, 'Nps' ],
-        [ 'buffers_backend_fsync', $delta_backend_fsync, 'Nps' ],
-        [ 'buffers_alloc', $delta_buff_alloc, 'Bps' ] );
+        [ 'buffers_backend', $delta_buff_backend ],
+        [ 'checkpoint_timed', $delta_checkpoint_timed ],
+        [ 'checkpoint_req', $delta_checkpoint_req ],
+        [ 'buffers_checkpoint', $delta_buff_checkpointer ],
+        [ 'buffers_clean', $delta_buff_bgwriter ],
+        [ 'maxwritten_clean', $delta_maxwritten_clean ],
+        [ 'buffers_backend_fsync', $delta_backend_fsync ],
+        [ 'buffers_alloc', $delta_buff_alloc ] );
 
     if ($delta_buff_total) {
 
@@ -3422,10 +3422,10 @@ sub check_commit_ratio {
             unless $rollbacks == 0;
 
         push @perfdata => (
-            [ "${db}_commit_rate",    sprintf( "%.2f", $commit_rate ),   'tps' ],
-            [ "${db}_rollback_rate",  sprintf( "%.2f", $rollback_rate ), 'tps' ],
-            [ "${db}_xact_rate",      sprintf( "%.2f", $xact_rate ),     'tps' ],
-            [ "${db}_rollback_ratio", sprintf( "%.2f", $ratio ),         '%'   ]
+            [ "${db}_commit_rate",    sprintf( "%.2f", $commit_rate )   ],
+            [ "${db}_rollback_rate",  sprintf( "%.2f", $rollback_rate ) ],
+            [ "${db}_xact_rate",      sprintf( "%.2f", $xact_rate )     ],
+            [ "${db}_rollback_ratio", sprintf( "%.2f", $ratio ), '%'    ]
         );
 
         THRESHOLD_LOOP: foreach my $val ( ('rollbacks', 'rollback_rate', 'rollback_ratio') ) {
@@ -8316,7 +8316,7 @@ DB_LOOP: foreach my $stat (@rs) {
         my $diff_size;
 
         if ( $stat->[0] eq 'live' ) {
-            push @perfdata => [ "# files in $stat->[1]", $stat->[2], 'File', @perf_flimits ];
+            push @perfdata => [ "# files in $stat->[1]", $stat->[2], undef, @perf_flimits ];
             push @perfdata => [ "Total size in $stat->[1]", $stat->[3], 'B', @perf_limits ];
 
             if ( defined $c_limit) {
@@ -8360,9 +8360,9 @@ DB_LOOP: foreach my $stat (@rs) {
         $frate = 60 * $diff_number / ($now - $last_check);
         $brate = 60 * $diff_size   / ($now - $last_check);
 
-        push @perfdata => [ "$stat->[1]", $frate, 'Fpm' ];
-        push @perfdata => [ "$stat->[1]", $brate, 'Bpm' ];
-        push @perfdata => [ "$stat->[1]", $diff_number, 'Files', @perf_flimits ];
+        push @perfdata => [ "$stat->[1]", $frate ];
+        push @perfdata => [ "$stat->[1]", $brate ];
+        push @perfdata => [ "$stat->[1]", $diff_number, undef, @perf_flimits ];
         push @perfdata => [ "$stat->[1]", $diff_size, 'B', @perf_limits ];
 
         if ( defined $c_limit) {
