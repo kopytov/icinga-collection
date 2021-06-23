@@ -16,8 +16,8 @@ require {
     type smbd_port_t;
     type sudo_exec_t;
     type user_tmp_t;
-    class dir { getattr ioctl open read search };
-    class file { execute execute_no_trans getattr ioctl lock open read };
+    class dir { add_name create getattr ioctl open read remove_name search write };
+    class file { create execute execute_no_trans getattr ioctl lock open read setattr unlink };
     class key { read write };
     class netlink_route_socket { bind create getattr nlmsg_read read write };
     class sock_file { getattr };
@@ -36,7 +36,9 @@ allow icinga2_t rpm_exec_t:file { execute execute_no_trans getattr ioctl open re
 allow icinga2_t rpm_var_lib_t:file { getattr lock open read };
 allow icinga2_t rpm_var_lib_t:dir { getattr open read search };
 allow icinga2_t rpm_var_cache_t:dir { getattr open read search };
-allow icinga2_t user_tmp_t:dir { getattr open read search };
+allow icinga2_t rpm_var_cache_t:file { open };
+allow icinga2_t user_tmp_t:dir { add_name create getattr open read remove_name search write };
+allow icinga2_t user_tmp_t:file { create setattr unlink };
 
 ### check_disk_smb
 allow nagios_checkdisk_plugin_t krb5_conf_t:file { getattr open read };
