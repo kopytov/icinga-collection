@@ -8,6 +8,7 @@ require {
     type nagios_mail_plugin_t;
     type nagios_unconfined_plugin_t;
     type postfix_master_exec_t;
+    type postfix_postqueue_t;
     type proc_net_t;
     type rpm_exec_t;
     type rpm_var_cache_t;
@@ -15,8 +16,10 @@ require {
     type samba_etc_t;
     type smbd_port_t;
     type sudo_exec_t;
+    type system_mail_t;
     type user_tmp_t;
     class dir { add_name create getattr ioctl open read remove_name search write };
+    class fifo_file { getattr write };
     class file { create execute execute_no_trans getattr ioctl lock open read setattr unlink };
     class key { read write };
     class netlink_route_socket { bind create getattr nlmsg_read read write };
@@ -29,6 +32,8 @@ require {
 ### check_mailq
 allow nagios_mail_plugin_t postfix_master_exec_t:file { getattr execute };
 allow nagios_mail_plugin_t sudo_exec_t:file { getattr execute };
+allow system_mail_t icinga2_t:fifo_file { getattr };
+allow postfix_postqueue_t icinga2_t:fifo_file { getattr write };
 
 ### check_yum.py
 allow icinga2_t devlog_t:sock_file { getattr };
