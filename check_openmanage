@@ -885,9 +885,7 @@ sub run_command {
       or do { report('other', "Couldn't run command '$command': $!", $E_UNKNOWN)
 		and return [] };
     my @lines = <$CMD>;
-    close $CMD
-      or do { report('other', "Couldn't close filehandle for command '$command': $!", $E_UNKNOWN)
-		and return \@lines };
+    close $CMD;
     return \@lines;
 }
 
